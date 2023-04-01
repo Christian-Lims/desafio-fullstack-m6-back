@@ -1,0 +1,546 @@
+{
+    "openapi": "3.0.0",
+
+    "info": {
+        "title": "API lista de contatos",
+        "description": "Desafio full-stack",
+        "contact": {
+            "email": "christiandasilvalima@hotmail.com"
+        },
+        "version": "1.0.0"
+    },
+    "servers":[
+
+        {
+            "url": "http://localhost:8000",
+            "description": "API dev"
+        }
+      
+    ],
+    "paths": {
+        "/clients ": {
+            "post": {
+                "summary": "Cadastro de usuarios",
+                "description": "Essa rota é responsável por cadastrar novos usuarios",
+                "tags": ["Clients"],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Client"
+                            },
+                            "examples": {
+                                "client": {
+                                    "value": {
+                                        "full_name": "João",
+ 	                                    "email": "joao@mail.com",
+                                        "password": "12345687",
+                                        "phone_number": "5595358468"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "409": {
+                        "description": "Email already exists "
+                    },  
+                    "201": {
+                        "description": "Created ",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Client"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+           
+        },
+        "/login": {
+            "post":{
+                "summary": "Rota para fazer login do usuário",
+                "description": "Essa rota será responsável por logar o usuário e retornar o token",
+                "tags":["Login"],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "$ref": "#/components/schemas/Login"
+                            },
+                            "examples":{
+                                "client": {
+                                    "value":{
+                                        "email": "joao@mail.com",
+                                        "password": "12345687"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses":{
+                    "400": {
+                        "description": "Disabled client"
+                    },
+                    "403": {
+                        "description": "Email or password invalid"
+                    },  
+                    "201":{
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type":"object",
+                                    "$ref":"#/components/schemas/LoginResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/profile": {
+            "get":{
+                "summary": "Rota para pegar informações do usuario logado",
+                "description": "Rota usa o token para pegar informações do usuario logado",
+                "tags":["Clients"],
+                "security": [{"bearerAuth": [] }],
+                "responses":{
+                    "400": {
+                        "description": "Disabled client"
+                    },
+                    "403": {
+                        "description": "Email or password invalid"
+                    },    
+                    "200":{
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type":"object",
+                                    "$ref":"#/components/schemas/Client"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/clients": {
+            "get":{
+                "summary": "Rota para listagem de todos clients",
+                "description": "A rota deve listar todos os clients",
+                "tags":["Clients"],
+                "security": [{"bearerAuth": [] }],
+                "responses":{
+                    "401": {
+                        "description": "invalid token"
+                    }, 
+                    "200":{
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type":"array",
+                                    "items":{
+                                        "$ref":"#/components/schemas/Client"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/clients/{id}": {
+            "patch":{
+                "summary": "Rota para atualizar informações do cliente",
+                "description": "Rota para atualizar informações do cliente",
+                "tags":["Clients"],
+                "security": [{"bearerAuth": [] }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do cliente para a busca",
+                        "required": true
+                    }
+                ],
+                "responses":{
+                    "401": {
+                        "description": "invalid token"
+                    }, 
+                    "400": {
+                        "description": "Uuid invalid format"
+                    },  
+                    "404": {
+                        "description": "Invalid id"
+                    }, 
+                    "400": {
+                        "description": "Disabled client"
+                    },
+                    "401": {
+                        "description": "No permission"
+                    }, 
+                    "409": {
+                        "description": "Email already exists"
+                    }, 
+                    "200":{
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type":"object",
+                                    "items":{
+                                        "$ref":"#/components/schemas/Client"
+                                    }
+                                },
+                                "examples": {
+                                    "client": {
+                                        "value": {
+                                            "full_name": "Christian",
+                                             "email": "Christian@mail.com",
+                                            "password": "12345687",
+                                            "phone_number": "5595358468"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/clients/{id}  ": {
+            "delete":{
+                "summary": "Rota deleta um cliente",
+                "description": "Deve deletar um cliente pelo Id",
+                "tags":["Clients"],
+                "security": [{"bearerAuth": [] }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do cliente para a busca",
+                        "required": true
+                    }
+                ],
+                "responses":{
+                    "401": {
+                        "description": "invalid token"
+                    }, 
+                    "400": {
+                        "description": "Uuid invalid format"
+                    },  
+                    "404": {
+                        "description": "Invalid id"
+                    }, 
+                    "400": {
+                        "description": "Disabled client"
+                    },
+                    "401": {
+                        "description": "No permission"
+                    },  
+                    "204":{
+                        "description": "OK",
+                        "content": {
+                    
+                        }
+                    }
+                }
+            }
+        },
+        "/contacts ": {
+            "post": {
+                "summary": "Cadastro de um novo contato",
+                "description": "Essa rota é responsável por cadastrar novos contatos",
+                "tags": ["Contact"],
+                "security": [{"bearerAuth": [] }],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Contact"
+                            },
+                            "examples": {
+                                "client": {
+                                    "value": {
+                                        "full_name": "Gabriel",
+ 	                                    "email": "Gabriel@mail.com",
+                                        "phone_number": "5595458422"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "401": {
+                        "description": "invalid token"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "409": {
+                        "description": "Email already exists in your list"
+                    },  
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "$ref": "#/components/schemas/Contact"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/contacts": {
+            "get":{
+                "summary": "Rota para listagem de todos contatos",
+                "description": "A rota deve listar todos os contatos",
+                "tags":["Contact"],
+                "security": [{"bearerAuth": [] }],
+                "responses":{
+                    "401": {
+                        "description": "invalid token"
+                    }, 
+                    "200":{
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type":"array",
+                                    "items":{
+                                        "$ref":"#/components/schemas/Contact"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/contacts/{id}": {
+            "get":{
+                "summary": "Rota para pegar um contato por id",
+                "description": "Rota para pegar informações de um contato por id",
+                "tags":["Contact"],
+                "security": [{"bearerAuth": [] }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do contato para a busca",
+                        "required": true
+                    }
+                ],
+                "responses":{
+                    "401": {
+                        "description": "invalid token"
+                    }, 
+                    "400": {
+                        "description": "Uuid invalid format"
+                    },  
+                    "404": {
+                        "description": "Invalid id"
+                    }, 
+                    "400": {
+                        "description": "Disabled client"
+                    },
+                    "401": {
+                        "description": "No permission"
+                    },   
+                    "200":{
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type":"object",
+                                    "$ref":"#/components/schemas/Contact"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/contacts/{id} ": {
+            "patch":{
+                "summary": "Rota para atualizar informações do contato",
+                "description": "Rota para atualizar informações do contato",
+                "tags":["Contact"],
+                "security": [{"bearerAuth": [] }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do contato para a busca",
+                        "required": true
+                    }
+                ],
+                "responses":{
+                    "401": {
+                        "description": "invalid token"
+                    }, 
+                    "400": {
+                        "description": "Uuid invalid format"
+                    },  
+                    "404": {
+                        "description": "Invalid id"
+                    }, 
+                    "401": {
+                        "description": "No permission"
+                    }, 
+                    "409": {
+                        "description": "Email already exists in your list"
+                    }, 
+                    "200":{
+                        "description": "OK",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type":"object",
+                                    "items":{
+                                        "$ref":"#/components/schemas/Client"
+                                    }
+                                },
+                                "examples": {
+                                    "client": {
+                                        "value": {
+                                            "full_name": "GabielLima",
+                                             "email": "GabielLima@mail.com",
+                                            "phone_number": "45953584622"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/contacts/{id}   ": {
+            "delete":{
+                "summary": "Rota deleta um contato",
+                "description": "Deve deletar um contato pelo Id",
+                "tags":["Contact"],
+                "security": [{"bearerAuth": [] }],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id do contato para a busca",
+                        "required": true
+                    }
+                ],
+                "responses":{
+                    "401": {
+                        "description": "invalid token"
+                    }, 
+                    "400": {
+                        "description": "Uuid invalid format"
+                    },  
+                    "404": {
+                        "description": "Invalid id"
+                    }, 
+                    "401": {
+                        "description": "No permission"
+                    },  
+                    "204":{
+                        "description": "OK",
+                        "content": {
+                    
+                        }
+                    }
+                }
+            }
+        }
+    },
+
+    "components": {
+        "schemas": {
+            "Client":{
+                "type": "object",
+                "properties": {
+                    "id":{
+                        "type": "string"
+                    },
+                    "full_name": {
+                        "type": "sting"
+                    },
+                    "email": {
+                        "type": "sting"
+                    },
+                    "password": {
+                        "type": "sting"
+                    },
+                    "phone_number": {
+                        "type": "sting"
+                    },
+                    "createdAt": {
+                        "type": "date"
+                    }
+                }
+            },
+            "Login":{
+                "type": "object",
+                "properties":{
+                    "email":{
+                        "type": "string"
+                    },
+                    "password":{
+                        "type":"string"
+                    }
+                }
+            },
+            "LoginResponse":{
+                "type": "object",
+                "properties":{
+                    "Token":{
+                        "type": "string"
+                    }
+                }
+            },
+            "Contact":{
+                "type": "object",
+                "properties": {
+                    "id":{
+                        "type": "string"
+                    },
+                    "full_name": {
+                        "type": "sting"
+                    },
+                    "email": {
+                        "type": "sting"
+                    },
+                    "phone_number": {
+                        "type": "sting"
+                    },
+                    "createdAt": {
+                        "type": "date"
+                    }
+                }
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }     
+    }
+}
